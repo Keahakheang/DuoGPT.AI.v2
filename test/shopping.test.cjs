@@ -30,6 +30,10 @@ test('uses Responses web_search and returns only cited product URLs',async()=>{
  const sent=JSON.parse(requestOptions.body);
  assert.equal(sent.model,'gpt-5.6-luna');
  assert.equal(sent.tools[0].type,'web_search');
+ assert.equal(sent.tools[0].search_context_size,'medium');
+ assert.equal(sent.max_output_tokens,6000);
+ assert.match(sent.input,/Search the web separately for this product at FairPrice, Shopee, Lazada, Amazon SG, Cold Storage, and RedMart/);
+ assert.match(sent.input,/every distinct verified listing found, up to 50 total/);
  assert.equal(result.products.length,1);
  assert.equal(result.products[0].price,5.95);
  assert.equal(result.products[0].merchant,'FairPrice');

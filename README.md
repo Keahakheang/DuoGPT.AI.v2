@@ -18,6 +18,8 @@ Redeploy after changing environment variables. Check `/api/status` to verify the
 
 Chat and product search use the same API key, base URL, and model. Product search additionally requires your API provider to support the OpenAI Responses API `web_search` tool. If it does not, Shopwise shows a setup error and provides retailer search links; it does not invent prices. No `SERPAPI_KEY` is needed.
 
+Price questions sent to the assistant run a live product search across FairPrice, Shopee, Lazada, Amazon SG, Cold Storage, and RedMart. The assistant reports all verified listings returned by that search, including their source links and available price, rating, and delivery details (up to 50 listings). Web search is not a complete retailer inventory, so results may not include every product or listing.
+
 The Netlify Functions and local Node server remain supported as well.
 
 ### Verify backend
