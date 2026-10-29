@@ -4,36 +4,29 @@
 
 **What this does not claim:** Shopwise does not have official account integrations with FairPrice, Shopee, Lazada, Amazon SG, Cold Storage or RedMart. Google Shopping indexing is incomplete and results may mix pack sizes. Listed item prices can be stale; no guaranteed final delivery, taxes, checkout price, stock, coupon eligibility, or accurate seller matching. Search shortcuts link out to each real store. Saved shopping list is *not* a retailer checkout/cart.
 
-## Publish on your existing Netlify project
+## Deploy on Vercel
 
-This archive contains a folder **`shopwise_demo 2`**, matching your GitHub repository folder. Replace that folder's existing code, keeping the same path. Do not nest another `shopwise_demo 2` inside it.
+Import this repository into Vercel with the project root set to this folder and the **Other** framework preset. Leave the build command blank, set the output directory to `public`, and Vercel will deploy the server-side API handlers in `api/`.
 
-Your Netlify GitHub repo is `prajwaljha2007/shopwise_demo`. For this structure set:
+Add these in **Vercel → Project → Settings → Environment Variables**:
 
-- **Base directory**: `shopwise_demo 2`
-- **Publish directory**: `public` (relative to Base)
-- **Functions directory**: `netlify/functions` (relative to Base)
-- **Build command**: blank
+- Name: `OPENAI_API_KEY`; Value: your provider key (secret; server-side only). Enter the name and value in their separate fields—do not include `=` or quotes.
+- `OPENAI_BASE_URL`: `https://newapi.omgteam.me/v1`
+- `OPENAI_MODEL`: `gpt-5.6-luna`
 
-`netlify.toml` also declares publish, functions and redirects. Netlify can read it from the base directory.
+Redeploy after changing environment variables. Check `/api/status` to verify the server sees the key; this only confirms it is set, not that the provider accepts the key or model.
 
-### Get your search API key
+The chat API and product search are separate. The OpenAI-compatible chat model does not itself provide verified live retailer prices. Without optional `SERPAPI_KEY`, the product search form gives direct retailer search links instead of inventing prices. To show indexed price comparisons, configure `SERPAPI_KEY` as a server-side environment variable. `CHAT_ACCESS_CODE` and `SEARCH_ACCESS_CODE` are optional.
 
-1. Open https://serpapi.com/ and create an account, if eligible.
-2. Find your private API key in your SerpApi account dashboard. Check https://serpapi.com/pricing for current free availability and limits. As checked 2026-10-21, the Free plan lists 250 searches/month and 50 searches/hour; this may change.
-3. In **Netlify → Project configuration → Environment variables**, add a secret **`SERPAPI_KEY`** with your private key. Mark as a secret, and keep it out of GitHub.
-4. **Strongly recommended for a public website:** add **`SEARCH_ACCESS_CODE`** as a separate secret (pick a private shared code, not a shopping password). Shopwise will prompt visitors for it before price searches. Without it, anyone can spend your API quota.
-5. Trigger a fresh deploy from the latest GitHub commit. Open Shopwise and test `rolled oats 1kg`.
-
-For chat, add **`OPENAI_API_KEY`** as a secret environment variable. The configured OpenAI-compatible provider defaults to `https://newapi.omgteam.me/v1` with model `gpt-5.6-luna`; override these with `OPENAI_BASE_URL` and `OPENAI_MODEL` if needed. The chat API key is used only server-side. `CHAT_ACCESS_CODE` is optional and independent of the search code. Chat and live product search are separate services.
+The Netlify Functions and local Node server remain supported as well.
 
 ### Verify backend
 
-Open `https://YOUR-SITE.netlify.app/api/status` to check for `shoppingConfigured:true`. This only confirms your private key is **present** on the server, not that the provider accepts it.
+Open `https://YOUR-SITE/api/status` to check whether the server sees the configured API key. This confirms presence only, not whether the provider accepts it.
 
 Search through the website and look for real listing links. A missing FairPrice or Shopee result means Google Shopping did not return one; it does **not** mean the store has no product.
 
-If there is a problem, go to **Netlify → Logs → Functions** and inspect the function named `search`. Do not show logs containing secrets publicly.
+If there is a problem, check your deployment platform's function logs. Do not share logs containing secrets.
 
 ## Local development
 
@@ -41,8 +34,9 @@ Node.js 20+ required, no npm dependencies. In your terminal:
 
 ```sh
 cd "shopwise_demo 2"
+# Optional search provider for indexed price comparisons:
 export SERPAPI_KEY="your_secret_key"
-# Optional chat configuration (store the key as a secret; do not commit it):
+# Optional chat configuration:
 export OPENAI_API_KEY="your_provider_api_key"
 export OPENAI_BASE_URL="https://newapi.omgteam.me/v1"
 export OPENAI_MODEL="gpt-5.6-luna"

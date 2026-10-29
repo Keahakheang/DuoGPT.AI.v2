@@ -33,7 +33,7 @@ test('Missing API key returns a friendly error', async () => {
 });
 test('Provider authorization and account errors are friendly', async () => {
   await assert.rejects(generateReply({message:'Hi'}, {OPENAI_API_KEY:'test-key'},async()=>({ok:false,status:402})), /insufficient credits/);
-  await assert.rejects(generateReply({message:'Hi'}, {OPENAI_API_KEY:'test-key'},async()=>({ok:false,status:403})), /rejected this request/);
+  await assert.rejects(generateReply({message:'Hi'}, {OPENAI_API_KEY:'test-key'},async()=>({ok:false,status:403})), /denied access/);
 });
 test('Rate limiting and invalid API keys return useful errors', async () => {
   await assert.rejects(generateReply({message:'Hi'}, {OPENAI_API_KEY:'test-key'},async()=>({ok:false,status:429})), /limit reached/);
