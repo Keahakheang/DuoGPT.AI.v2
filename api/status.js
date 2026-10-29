@@ -7,9 +7,9 @@ module.exports = function handler(req, res) {
     aiConfigured: !!process.env.OPENAI_API_KEY,
     requiresCode: !!process.env.CHAT_ACCESS_CODE,
     provider: 'OpenAI-compatible API',
-    shoppingConfigured: !!process.env.SERPAPI_KEY,
+    shoppingConfigured: !!process.env.OPENAI_API_KEY,
     shoppingRequiresCode: !!process.env.SEARCH_ACCESS_CODE,
-    shoppingSource: 'Google Shopping via SerpApi',
+    shoppingSource: 'OpenAI web search',
     liveRetailersConnected: false
   });
 };

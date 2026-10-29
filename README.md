@@ -1,8 +1,8 @@
-# Shopwise — actual Singapore shopping listings (v4)
+# Shopwise — Singapore shopping search
 
-**What is real:** When `SERPAPI_KEY` is set, Search requests Singapore-localized Google Shopping listings through SerpApi. Product titles, listed prices, merchants, source links, old prices (if present) and retrieval timestamps come from the response. The app does not contain fictional product offers or fake vouchers.
+Product comparisons use the configured OpenAI-compatible API with the Responses API `web_search` tool. Results are accepted only when the API returns a completed web search and citation annotations matching product links. The model/provider must support Responses API web search and structured JSON output; a chat-completions-only gateway will not work for this feature.
 
-**What this does not claim:** Shopwise does not have official account integrations with FairPrice, Shopee, Lazada, Amazon SG, Cold Storage or RedMart. Google Shopping indexing is incomplete and results may mix pack sizes. Listed item prices can be stale; no guaranteed final delivery, taxes, checkout price, stock, coupon eligibility, or accurate seller matching. Search shortcuts link out to each real store. Saved shopping list is *not* a retailer checkout/cart.
+Listings can be incomplete, stale, or mismatched; verify the source link and final checkout total. Shopwise does not have official account integrations with retailers. Delivery, vouchers and stock are not guaranteed. Saved shopping list is not a retailer checkout/cart.
 
 ## Deploy on Vercel
 
@@ -16,7 +16,7 @@ Add these in **Vercel → Project → Settings → Environment Variables**:
 
 Redeploy after changing environment variables. Check `/api/status` to verify the server sees the key; this only confirms it is set, not that the provider accepts the key or model.
 
-The chat API and product search are separate. The OpenAI-compatible chat model does not itself provide verified live retailer prices. Without optional `SERPAPI_KEY`, the product search form gives direct retailer search links instead of inventing prices. To show indexed price comparisons, configure `SERPAPI_KEY` as a server-side environment variable. `CHAT_ACCESS_CODE` and `SEARCH_ACCESS_CODE` are optional.
+Chat and product search use the same API key, base URL, and model. Product search additionally requires your API provider to support the OpenAI Responses API `web_search` tool. If it does not, Shopwise shows a setup error and provides retailer search links; it does not invent prices. No `SERPAPI_KEY` is needed.
 
 The Netlify Functions and local Node server remain supported as well.
 
@@ -24,7 +24,7 @@ The Netlify Functions and local Node server remain supported as well.
 
 Open `https://YOUR-SITE/api/status` to check whether the server sees the configured API key. This confirms presence only, not whether the provider accepts it.
 
-Search through the website and look for real listing links. A missing FairPrice or Shopee result means Google Shopping did not return one; it does **not** mean the store has no product.
+Try a product search and open each cited retailer link to check its current price and availability.
 
 If there is a problem, check your deployment platform's function logs. Do not share logs containing secrets.
 
@@ -34,13 +34,9 @@ Node.js 20+ required, no npm dependencies. In your terminal:
 
 ```sh
 cd "shopwise_demo 2"
-# Optional search provider for indexed price comparisons:
-export SERPAPI_KEY="your_secret_key"
-# Optional chat configuration:
 export OPENAI_API_KEY="your_provider_api_key"
 export OPENAI_BASE_URL="https://newapi.omgteam.me/v1"
 export OPENAI_MODEL="gpt-5.6-luna"
-# optional: export SEARCH_ACCESS_CODE="your_secret_code"
 npm start
 ```
 
@@ -51,13 +47,12 @@ Open http://localhost:3000. Run automated tests with `npm test`.
 - Third-party API keys are used **server-side only**; never embed them into `app.js` or `index.html`.
 - Published product links are checked to be HTTPS; externally sourced text is escaped before display.
 - Client storage contains notes and shortlist; it is local to the browser, not a synced user account.
-- Five-minute in-memory cache helps local throughput, but serverless instances may not share cache. Google/SerpApi may also apply their own caching.
+- Five-minute in-memory cache helps local throughput, but serverless instances may not share cache.
 - A shared access code is only a basic guard. A public production service needs persistent per-user rate limiting, authentication, usage caps, logging and vendor terms compliance. Consider Netlify platform controls and a durable database before scaling.
 - Never collect store usernames/passwords, payment card data, or secretly access retailer accounts. Real retailer cart or voucher support requires an approved integration and the user's consent.
 - Review search shortcuts open YouTube / Google results; reviews are **not** automatically analyzed.
 
 ## Sources
 
-- SerpApi: https://serpapi.com/google-shopping-api and https://serpapi.com/pricing
+- OpenAI web search: https://developers.openai.com/api/docs/guides/tools-web-search
 - Netlify: https://docs.netlify.com/build/functions/overview/
-- Google Merchant API handles a merchant's own catalog; it does not offer an unrestricted cross-retailer inventory API: https://developers.google.com/merchant/api/reference/rest/products_v1/accounts.products/list

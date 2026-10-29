@@ -2,7 +2,7 @@
   "name": "shopwise-live-shopping",
   "version": "4.0.0",
   "private": true,
-  "description": "Shopwise Singapore shopping search with sourced real prices via SerpApi and optional AI",
+  "description": "Shopwise Singapore shopping search with OpenAI-compatible web search",
   "scripts": {
     "start": "node server.js",
     "test": "node --test"

@@ -43,15 +43,15 @@ test('Vercel chat function proxies a reply without exposing the key', async () =
 });
 
 test('Vercel product search explains missing optional search provider', async () => {
-  const oldKey = process.env.SERPAPI_KEY;
-  delete process.env.SERPAPI_KEY;
+  const oldKey = process.env.OPENAI_API_KEY;
+  delete process.env.OPENAI_API_KEY;
   try {
     const res = responseMock();
     await searchHandler({method: 'GET', headers: {}, query: {q: 'oats'}}, res);
     assert.equal(res.statusCode, 503);
-    assert.match(res.body.error, /retailer search links/);
+    assert.match(res.body.error, /OPENAI_API_KEY/);
   } finally {
-    if (oldKey === undefined) delete process.env.SERPAPI_KEY;
-    else process.env.SERPAPI_KEY = oldKey;
+    if (oldKey === undefined) delete process.env.OPENAI_API_KEY;
+    else process.env.OPENAI_API_KEY = oldKey;
   }
 });
